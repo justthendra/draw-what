@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLanguage } from '../context/LanguageContext';
 import {
     Check,
     Clock,
@@ -18,33 +19,34 @@ function Lobby({
     onLeave,
     myId
 }) {
+    const { t } = useLanguage();
     const allReady = players.filter(p => p.id !== myId).every(p => p.isReady);
     const canStart = players.length >= 2 && allReady;
 
     return (
         <div className="lobby section-animate">
             <div className="lobby-header">
-                <h1>🎨 Draw What?!</h1>
+                <h1>🎨 {t('appTitle')}</h1>
                 <div className="room-code">
-                    <span>Oda Kodu:</span>
+                    <span>{t('roomCode')}:</span>
                     <strong>{roomId}</strong>
                 </div>
             </div>
 
             <div className="players-list">
-                <h3><Users size={18} /> Oyuncular ({players.length}/{maxPlayers})</h3>
+                <h3><Users size={18} /> {t('players')} ({players.length}/{maxPlayers})</h3>
                 <ul>
                     {players.map((player) => (
                         <li key={player.id} className={player.isReady ? 'ready' : ''}>
                             <span className="player-name">
                                 {player.name}
-                                {player.id === myId && ' (Sen)'}
+                                {player.id === myId && ` (${t('yourRole').split(' ')[0] === 'Your' ? 'You' : 'Sen'})`}
                             </span>
                             <span className="player-status">
                                 {player.isReady ? (
-                                    <><Check size={16} color="#4ade80" /> Hazır</>
+                                    <><Check size={16} color="#4ade80" /> {t('ready')}</>
                                 ) : (
-                                    <><Clock size={16} color="#fbbf24" /> Bekliyor</>
+                                    <><Clock size={16} color="#fbbf24" /> {t('waiting')}</>
                                 )}
                             </span>
                         </li>
@@ -60,9 +62,9 @@ function Lobby({
                         style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}
                     >
                         {players.find(p => p.id === myId)?.isReady ? (
-                            <><X size={18} /> Hazır Değilim</>
+                            <><X size={18} /> {t('cancelReady')}</>
                         ) : (
-                            <><Check size={18} /> Hazırım</>
+                            <><Check size={18} /> {t('setReady')}</>
                         )}
                     </button>
                 )}
@@ -75,9 +77,9 @@ function Lobby({
                         style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}
                     >
                         {canStart ? (
-                            <><Rocket size={20} /> Oyunu Başlat</>
+                            <><Rocket size={20} /> {t('startGameBtn')}</>
                         ) : (
-                            <><Clock size={18} /> {players.length < 2 ? 'En az 2 oyuncu gerekli' : 'Oyuncular bekleniyor...'}</>
+                            <><Clock size={18} /> {t('waitingForPlayers')}</>
                         )}
                     </button>
                 )}
@@ -87,7 +89,7 @@ function Lobby({
                     onClick={onLeave}
                     style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}
                 >
-                    <LogOut size={18} /> Ayrıl
+                    <LogOut size={18} /> {t('leaveRoom')}
                 </button>
             </div>
         </div>

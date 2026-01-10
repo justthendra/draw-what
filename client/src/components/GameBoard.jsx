@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import CanvasDraw from 'react-canvas-draw';
+import { useLanguage } from '../context/LanguageContext';
 import {
     Users,
     LogOut,
@@ -16,7 +17,8 @@ import {
     Globe,
     Users2,
     Send,
-    MessageSquare
+    MessageSquare,
+    Rocket
 } from 'lucide-react';
 
 function GameBoard({
@@ -36,6 +38,7 @@ function GameBoard({
     onLeave,
     myId
 }) {
+    const { t } = useLanguage();
     const canvasRef = useRef(null);
     const scrollRef = useRef(null);
     const [timeLeft, setTimeLeft] = useState(duration);
@@ -44,7 +47,7 @@ function GameBoard({
     const [chatTab, setChatTab] = useState('global'); // 'global' | 'team'
     const [msgInput, setMsgInput] = useState('');
 
-    // Zamanlayıcı
+    // Timer
     useEffect(() => {
         setTimeLeft(duration);
         const timer = setInterval(() => {
@@ -60,18 +63,18 @@ function GameBoard({
         return () => clearInterval(timer);
     }, [duration, round]);
 
-    // Gelen çizimi yükle
+    // Load incoming drawing
     useEffect(() => {
         if (role !== 'painter' && canvasRef.current && drawingData) {
             try {
                 canvasRef.current.loadSaveData(drawingData, true);
             } catch (e) {
-                console.error('Çizim yüklenemedi:', e);
+                console.error('Drawing load error:', e);
             }
         }
     }, [drawingData, role]);
 
-    // Mesajlar gelince aşağı kaydır
+    // Scroll to bottom on new messages
     useEffect(() => {
         if (scrollRef.current) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -157,7 +160,7 @@ function GameBoard({
                 onDrawUpdate(JSON.stringify(currentData));
             }
         } catch (err) {
-            console.error("Şekil ekleme hatası:", err);
+            console.error("Shape add error:", err);
         }
     };
 
@@ -176,42 +179,42 @@ function GameBoard({
 
     const colors = ['#FFFFFF', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#FFA500'];
 
-    // Filtrelenmiş mesajlar
+    // Filtered messages
     const filteredMessages = messages.filter(m => m.type === chatTab);
 
     return (
         <div className="game-board full-layout">
-            {/* SOL TARAF: OYUNCULAR */}
+            {/* LEFT SIDE: PLAYERS */}
             <aside className="game-sidebar players-sidebar">
                 <div className="sidebar-header">
-                    <h3><Users size={16} /> Oyuncular</h3>
+                    <h3><Users size={16} /> {t('players')}</h3>
                 </div>
                 <div className="sidebar-content">
                     {(players || []).map(p => (
                         <div key={p.id} className={`player-item ${p.id === myId ? 'me' : ''}`}>
                             <span className="player-avatar">{(p.name || '?')[0].toUpperCase()}</span>
-                            <span className="player-name">{p.name || 'Bilinmeyen'} {p.id === myId && '(Sen)'}</span>
+                            <span className="player-name">{p.name || '???'}</span>
                         </div>
                     ))}
                 </div>
                 <div className="sidebar-footer">
                     <button className="btn leave-btn mini" onClick={onLeave}>
-                        <LogOut size={14} /> Ayrıl
+                        <LogOut size={14} /> {t('leaveRoom')}
                     </button>
                 </div>
             </aside>
 
-            {/* ORTA: OYUN ALANI */}
+            {/* CENTER: GAME AREA */}
             <main className="game-main-area">
                 <header className="game-header">
-                    <div className="round-info">Tur {round}/{totalRounds}</div>
+                    <div className="round-info">{t('round')} {round}/{totalRounds}</div>
                     <div className={`timer ${timeLeft <= 10 ? 'warning' : ''}`}>
                         <Clock size={20} /> {formatTime(timeLeft)}
                     </div>
                     <div className="role-badge">
-                        {role === 'describer' && <><Mic size={14} /> Anlatıcı</>}
-                        {role === 'painter' && <><Paintbrush size={14} /> Ressam</>}
-                        {role === 'spectator' && <><Eye size={14} /> İzleyici</>}
+                        {role === 'describer' && <><Mic size={14} /> {t('describer')}</>}
+                        {role === 'painter' && <><Paintbrush size={14} /> {t('painter')}</>}
+                        {role === 'spectator' && <><Eye size={14} /> {t('spectator')}</>}
                     </div>
                 </header>
 
@@ -222,7 +225,7 @@ function GameBoard({
                                 <div className="target-image">
                                     <p className="image-description">{image?.description}</p>
                                 </div>
-                                <p className="partner-hint"><Paintbrush size={16} /> <strong>{partnerName}</strong> çiziyor...</p>
+                                <p className="partner-hint"><Paintbrush size={16} /> <strong>{partnerName}</strong> {t('partnerDrawing')}</p>
                             </div>
                             <div className="drawing-section">
                                 <CanvasDraw
@@ -241,7 +244,7 @@ function GameBoard({
 
                     {role === 'painter' && (
                         <div className="painter-view">
-                            <p className="partner-hint"><Mic size={18} /> <strong>{partnerName}</strong> anlatıyor...</p>
+                            <p className="partner-hint"><Mic size={18} /> <strong>{partnerName}</strong> {t('targetImage')}</p>
 
                             <div className="canvas-section-group">
                                 <div className="canvas-wrapper">
@@ -262,12 +265,12 @@ function GameBoard({
                                 </div>
 
                                 <aside className="shape-toolbar">
-                                    <button className="shape-btn" onClick={() => addShape('square')} title="Kare"><Square size={20} /></button>
-                                    <button className="shape-btn" onClick={() => addShape('circle')} title="Daire"><Circle size={20} /></button>
-                                    <button className="shape-btn" onClick={() => addShape('triangle')} title="Üçgen"><Triangle size={20} /></button>
-                                    <button className="shape-btn" onClick={() => addShape('star')} title="Yıldız"><Star size={20} /></button>
+                                    <button className="shape-btn" onClick={() => addShape('square')}><Square size={20} /></button>
+                                    <button className="shape-btn" onClick={() => addShape('circle')}><Circle size={20} /></button>
+                                    <button className="shape-btn" onClick={() => addShape('triangle')}><Triangle size={20} /></button>
+                                    <button className="shape-btn" onClick={() => addShape('star')}><Star size={20} /></button>
                                     <div className="toolbar-divider"></div>
-                                    <button className="shape-btn active" title="Serbest Çizim"><Paintbrush size={20} /></button>
+                                    <button className="shape-btn active"><Paintbrush size={20} /></button>
                                 </aside>
                             </div>
 
@@ -301,8 +304,8 @@ function GameBoard({
                                 <div className="dock-divider"></div>
 
                                 <div className="dock-section main-actions">
-                                    <button className="action-btn undo" onClick={handleUndo} title="Geri Al"><Undo size={20} /></button>
-                                    <button className="action-btn clear" onClick={handleClear} title="Temizle"><Trash2 size={20} /></button>
+                                    <button className="action-btn undo" onClick={handleUndo} title={t('undo')}><Undo size={20} /></button>
+                                    <button className="action-btn clear" onClick={handleClear} title={t('clear')}><Trash2 size={20} /></button>
                                 </div>
                             </div>
                         </div>
@@ -325,20 +328,20 @@ function GameBoard({
                 </div>
             </main>
 
-            {/* SAĞ TARAF: SOHBET */}
+            {/* RIGHT SIDE: CHAT */}
             <aside className="game-sidebar chat-sidebar">
                 <div className="chat-tabs">
                     <button className={`tab-btn ${chatTab === 'global' ? 'active' : ''}`} onClick={() => setChatTab('global')}>
-                        <Globe size={14} /> Genel
+                        <Globe size={14} /> {t('globalChat')}
                     </button>
                     <button className={`tab-btn team-tab ${chatTab === 'team' ? 'active' : ''}`} onClick={() => setChatTab('team')}>
-                        <Users2 size={14} /> Takım
+                        <Users2 size={14} /> {t('teamChat')}
                     </button>
                 </div>
 
                 <div className="chat-messages" ref={scrollRef}>
                     {filteredMessages.length === 0 && (
-                        <div className="chat-empty"><MessageSquare size={16} /> Ekranı selamla!</div>
+                        <div className="chat-empty"><MessageSquare size={16} /> {t('noMessages')}</div>
                     )}
                     {filteredMessages.map((m, i) => (
                         <div key={i} className={`message ${m.senderId === myId ? 'mine' : ''}`}>
@@ -351,7 +354,7 @@ function GameBoard({
                 <form className="chat-input-area" onSubmit={sendChat}>
                     <input
                         type="text"
-                        placeholder={`${chatTab === 'global' ? 'Herkese' : 'Takım arkadaşına'} bir şeyler yaz...`}
+                        placeholder={t('typeMessage')}
                         value={msgInput}
                         onChange={(e) => setMsgInput(e.target.value)}
                     />

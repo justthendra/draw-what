@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLanguage } from '../context/LanguageContext';
 import {
     Crown,
     Medal,
@@ -9,6 +10,8 @@ import {
 } from 'lucide-react';
 
 function Scoreboard({ scores, winner, isGameOver, isHost, onNextRound, onLeave }) {
+    const { t } = useLanguage();
+
     // İlk 3 ve diğerlerini ayır
     const topThree = scores.slice(0, 3);
     const others = scores.slice(3);
@@ -21,8 +24,8 @@ function Scoreboard({ scores, winner, isGameOver, isHost, onNextRound, onLeave }
                         <div className="winner-crown">
                             <Trophy size={60} color="var(--accent-warning)" />
                         </div>
-                        <h1>OYUNUN ŞAMPİYONU</h1>
-                        <p className="subtext">Harika bir performans!</p>
+                        <h1>{t('gameOver')}</h1>
+                        <p className="subtext">{t('winner')}</p>
                     </div>
                 )}
 
@@ -40,7 +43,7 @@ function Scoreboard({ scores, winner, isGameOver, isHost, onNextRound, onLeave }
                                     </div>
                                     <div className="player-meta">
                                         <span className="player-name">{player.name}</span>
-                                        <div className="score-badge">{player.score} PTS</div>
+                                        <div className="score-badge">{player.score} {t('points')}</div>
                                     </div>
                                 </div>
                             </div>
@@ -52,9 +55,9 @@ function Scoreboard({ scores, winner, isGameOver, isHost, onNextRound, onLeave }
                 {others.length > 0 && (
                     <div className="leaderboard-others animated-entry" style={{ animationDelay: '0.4s' }}>
                         <div className="list-header">
-                            <span>Sıralama</span>
-                            <span>Oyuncu</span>
-                            <span>Puan</span>
+                            <span>{t('rank')}</span>
+                            <span>{t('player')}</span>
+                            <span>{t('score')}</span>
                         </div>
                         <div className="scrollable-list">
                             {others.map((player, index) => (
@@ -72,24 +75,24 @@ function Scoreboard({ scores, winner, isGameOver, isHost, onNextRound, onLeave }
                 <div className="scoreboard-actions-box animated-entry" style={{ animationDelay: '0.5s' }}>
                     {isGameOver ? (
                         <button className="premium-btn restart" onClick={() => window.location.reload()}>
-                            <RefreshCw size={22} /> Yeni Bir Lobi Kur
+                            <RefreshCw size={22} /> {t('playAgain')}
                         </button>
                     ) : (
                         isHost ? (
                             <div className="host-panel">
-                                <p className="host-hint">Herkes hazır olduğunda tura devam et!</p>
+                                <p className="host-hint">{t('hostHint')}</p>
                                 <div className="host-actions-row">
                                     <button className="action-btn-equal next-round" onClick={onNextRound}>
-                                        <Rocket size={18} /> Sonraki Tur
+                                        <Rocket size={18} /> {t('nextRoundBtn')}
                                     </button>
                                     <button className="action-btn-equal leave-room" onClick={onLeave}>
-                                        <LogOut size={18} /> Odadan Ayrıl
+                                        <LogOut size={18} /> {t('leaveRoom')}
                                     </button>
                                 </div>
                             </div>
                         ) : (
                             <div className="waiting-animation">
-                                <span>Oda sahibi yeni turu başlatıyor</span>
+                                <span>{t('waitingForHost')}</span>
                                 <div className="dots">
                                     <div className="dot"></div>
                                     <div className="dot"></div>

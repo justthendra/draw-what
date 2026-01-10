@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import CanvasDraw from 'react-canvas-draw';
+import { useLanguage } from '../context/LanguageContext';
 import {
     Trophy,
     ArrowRight,
@@ -25,6 +26,7 @@ function Results({
     onLeave,
     hasVoted
 }) {
+    const { t } = useLanguage();
     const canvasRef = useRef(null);
     const [hoverScore, setHoverScore] = useState(0);
 
@@ -34,25 +36,25 @@ function Results({
                 try {
                     canvasRef.current.loadSaveData(drawing, true);
                 } catch (e) {
-                    console.error('Sonuç çizimi yüklenemedi:', e);
+                    console.error('Result drawing load error:', e);
                 }
             }, 200);
             return () => clearTimeout(timer);
         }
     }, [drawing]);
 
-    const teamDisplay = team || { describerName: 'Bilinmeyen', painterName: 'Bilinmeyen' };
+    const teamDisplay = team || { describerName: '???', painterName: '???' };
 
     return (
         <div className="results-container section-animate">
             <header className="results-header">
                 <div className="header-round">
-                    <Info size={14} /> Tur {round}/{totalRounds}
+                    <Info size={14} /> {t('round')} {round}/{totalRounds}
                 </div>
-                <div className="header-title">Oylama Zamanı!</div>
+                <div className="header-title">{t('results')}</div>
                 <div className="header-actions">
                     <button className="btn leave-btn mini" onClick={onLeave}>
-                        <LogOut size={16} /> Ayrıl
+                        <LogOut size={16} /> {t('leaveRoom')}
                     </button>
                 </div>
             </header>
@@ -61,14 +63,14 @@ function Results({
                 <div className="result-card target-card">
                     <div className="card-header">
                         <Target size={16} className="header-icon" />
-                        <span>Hedeflenen</span>
+                        <span>{t('targetWord')}</span>
                     </div>
                     <div className="card-body">
                         <div className="image-placeholder">
-                            <p className="description-text">"{image?.description || 'Açıklama yüklenemedi'}"</p>
+                            <p className="description-text">"{image?.description || t('noDrawingData')}"</p>
                         </div>
                         <div className="team-badge">
-                            <strong>{teamDisplay.describerName}</strong> anlattı
+                            <strong>{teamDisplay.describerName}</strong> ({t('describer')})
                         </div>
                     </div>
                 </div>
@@ -76,7 +78,7 @@ function Results({
                 <div className="result-card drawing-card">
                     <div className="card-header">
                         <Paintbrush size={16} className="header-icon" />
-                        <span>Ortaya Çıkan</span>
+                        <span>{t('drawnResult')}</span>
                     </div>
                     <div className="card-body canvas-body relative-canvas" style={{ minHeight: '320px' }}>
                         {drawing ? (
@@ -93,11 +95,11 @@ function Results({
                         ) : (
                             <div className="no-drawing">
                                 <AlertCircle size={40} color="rgba(255,255,255,0.2)" />
-                                <p>Çizim verisi bulunamadı</p>
+                                <p>{t('noDrawingData')}</p>
                             </div>
                         )}
                         <div className="team-badge">
-                            <strong>{teamDisplay.painterName}</strong> çizdi
+                            <strong>{teamDisplay.painterName}</strong> ({t('painter')})
                         </div>
                     </div>
                 </div>
@@ -106,7 +108,7 @@ function Results({
             <div className="voting-container">
                 {!hasVoted ? (
                     <div className="voting-section fade-in">
-                        <h3>Sence ne kadar uyumlu?</h3>
+                        <h3>{t('rateDrawing')}</h3>
                         <div className="vote-options">
                             {[1, 2, 3, 4, 5].map((score) => (
                                 <button
@@ -129,7 +131,7 @@ function Results({
                 ) : (
                     <div className="status-area">
                         <div className="voted-badge">
-                            <CheckCircle size={20} /> Oyladın! Diğerleri bekleniyor...
+                            <CheckCircle size={20} /> {t('voteSubmitted')} {t('waitingForVotes')}
                         </div>
                     </div>
                 )}

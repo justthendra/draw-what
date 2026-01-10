@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import io from "socket.io-client";
+import { LanguageProvider, useLanguage } from "./context/LanguageContext";
 import JoinScreen from "./components/JoinScreen";
 import Lobby from "./components/Lobby";
 import GameBoard from "./components/GameBoard";
@@ -377,4 +378,14 @@ function App() {
   );
 }
 
-export default App;
+// export default App;
+
+// Multi-language wrapper
+function AppWrapper() {
+  return (
+    <LanguageProvider>
+      <App />
+    </LanguageProvider>
+  );
+}
+export default AppWrapper;
