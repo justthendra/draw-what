@@ -7,9 +7,15 @@ import Results from "./components/Results";
 import Scoreboard from "./components/Scoreboard";
 import "./App.css";
 
-// Socket bağlantısı (Production: Vercel env, Development: Vite proxy)
-const SERVER_URL = import.meta.env.VITE_SERVER_URL || "";
+// Socket bağlantısı
+// Discord Activity: discordsays.com proxy üzerinden /api prefix'i ile
+// Normal site: doğrudan Render URL'sine
+const isDiscordActivity = window.location.host.includes('discordsays.com');
+const SERVER_URL = isDiscordActivity ? "" : (import.meta.env.VITE_SERVER_URL || "");
+const SOCKET_PATH = isDiscordActivity ? "/api/socket.io" : "/socket.io";
+
 const socket = io(SERVER_URL, {
+  path: SOCKET_PATH,
   transports: ["polling", "websocket"],
   reconnectionAttempts: 5,
   timeout: 20000,
