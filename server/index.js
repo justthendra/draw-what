@@ -4,12 +4,40 @@ const http = require("http");
 const { Server } = require("socket.io");
 const cors = require("cors");
 
+// Allowed origins for CORS
+const allowedOrigins = [
+  "https://draw-what-client.vercel.app",
+  "https://*.vercel.app",
+  "https://*.discordsays.com",
+  "http://localhost:5173",
+  "http://localhost:3000"
+];
+
 const app = express();
 app.use(cors({
-  origin: "*",
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+
+    // Check if origin matches allowed patterns
+    const isAllowed = allowedOrigins.some(allowed => {
+      if (allowed.includes('*')) {
+        const regex = new RegExp(allowed.replace('*', '.*'));
+        return regex.test(origin);
+      }
+      return allowed === origin;
+    });
+
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      console.log('CORS blocked origin:', origin);
+      callback(null, true); // Allow anyway for debugging
+    }
+  },
   methods: ["GET", "POST", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept", "Origin"],
-  credentials: false
+  credentials: true
 }));
 
 app.get("/", (req, res) => {
@@ -22,13 +50,14 @@ const io = new Server(server, {
   cors: {
     origin: "*",
     methods: ["GET", "POST", "OPTIONS"],
-    credentials: false,
+    credentials: true,
     allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept", "Origin"],
   },
   transports: ["polling", "websocket"],
   allowEIO3: true,
   pingTimeout: 60000,
-  pingInterval: 25000
+  pingInterval: 25000,
+  allowUpgrades: true
 });
 
 // ============================================================
