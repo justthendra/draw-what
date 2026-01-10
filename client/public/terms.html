@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms of Service - Draw What?!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0d0d1a 0%, #1a1a3a 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h1 {
+            color: #00d9ff;
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+
+        h2 {
+            color: #ff4d6d;
+            margin: 30px 0 15px;
+            font-size: 1.3rem;
+        }
+
+        p,
+        li {
+            line-height: 1.8;
+            margin-bottom: 15px;
+            color: #b0b0b0;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        .lang-switch {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .lang-btn {
+            padding: 10px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .lang-btn:hover,
+        .lang-btn.active {
+            background: #00d9ff;
+            color: #000;
+            border-color: #00d9ff;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .last-updated {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 30px;
+        }
+
+        a {
+            color: #00d9ff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="lang-switch">
+            <button class="lang-btn active" onclick="switchLang('en')">🇬🇧 English</button>
+            <button class="lang-btn" onclick="switchLang('tr')">🇹🇷 Türkçe</button>
+        </div>
+
+        <!-- ENGLISH -->
+        <div id="en" class="section active">
+            <h1>📜 Terms of Service</h1>
+            <p><strong>Draw What?!</strong> - Discord Activity</p>
+
+            <h2>1. Acceptance of Terms</h2>
+            <p>By using Draw What?!, you agree to these Terms of Service. If you do not agree, please do not use this
+                application.</p>
+
+            <h2>2. Description of Service</h2>
+            <p>Draw What?! is a free multiplayer drawing game that runs as a Discord Activity. Players work in teams
+                where one describes and the other draws based on the description.</p>
+
+            <h2>3. User Conduct</h2>
+            <p>You agree not to:</p>
+            <ul>
+                <li>Create inappropriate, offensive, or harmful content</li>
+                <li>Harass, abuse, or harm other players</li>
+                <li>Attempt to exploit, hack, or disrupt the service</li>
+                <li>Use the service for any illegal purposes</li>
+                <li>Impersonate others or misrepresent your identity</li>
+            </ul>
+
+            <h2>4. User-Generated Content</h2>
+            <p>Drawings created during gameplay are temporary and not stored. However, you are responsible for any
+                content you create. Inappropriate content may result in being removed from game sessions.</p>
+
+            <h2>5. Disclaimer of Warranties</h2>
+            <p>This service is provided "AS IS" without warranties of any kind. We do not guarantee:</p>
+            <ul>
+                <li>Uninterrupted or error-free service</li>
+                <li>That the service will meet your specific requirements</li>
+                <li>The accuracy of game results or scores</li>
+            </ul>
+
+            <h2>6. Limitation of Liability</h2>
+            <p>We shall not be liable for any indirect, incidental, special, or consequential damages arising from your
+                use of this service.</p>
+
+            <h2>7. Third-Party Services</h2>
+            <p>This application operates within Discord's platform and is subject to <a href="https://discord.com/terms"
+                    target="_blank">Discord's Terms of Service</a>.</p>
+
+            <h2>8. Changes to Terms</h2>
+            <p>We may update these terms at any time. Continued use of the service after changes constitutes acceptance
+                of the new terms.</p>
+
+            <h2>9. Termination</h2>
+            <p>We reserve the right to terminate or suspend access to our service at any time, without prior notice, for
+                conduct that we believe violates these Terms.</p>
+
+            <h2>10. Contact</h2>
+            <p>For questions about these terms, please contact us through Discord or GitHub.</p>
+
+            <p class="last-updated">Last Updated: January 2026</p>
+        </div>
+
+        <!-- TURKISH -->
+        <div id="tr" class="section">
+            <h1>📜 Hizmet Şartları</h1>
+            <p><strong>Draw What?!</strong> - Discord Aktivitesi</p>
+
+            <h2>1. Şartların Kabulü</h2>
+            <p>Draw What?! kullanarak bu Hizmet Şartları'nı kabul etmiş olursunuz. Kabul etmiyorsanız, lütfen bu
+                uygulamayı kullanmayın.</p>
+
+            <h2>2. Hizmet Açıklaması</h2>
+            <p>Draw What?!, Discord Aktivitesi olarak çalışan ücretsiz bir çok oyunculu çizim oyunudur. Oyuncular
+                takımlar halinde çalışır; biri tarif eder, diğeri tarife göre çizer.</p>
+
+            <h2>3. Kullanıcı Davranışı</h2>
+            <p>Şunları yapmamayı kabul edersiniz:</p>
+            <ul>
+                <li>Uygunsuz, saldırgan veya zararlı içerik oluşturmak</li>
+                <li>Diğer oyunculara tacizde bulunmak, kötüye kullanmak veya zarar vermek</li>
+                <li>Hizmeti istismar etmeye, hacklemeye veya kesintiye uğratmaya çalışmak</li>
+                <li>Hizmeti yasadışı amaçlar için kullanmak</li>
+                <li>Başkalarının kimliğine bürünmek veya kimliğinizi yanlış tanıtmak</li>
+            </ul>
+
+            <h2>4. Kullanıcı Tarafından Oluşturulan İçerik</h2>
+            <p>Oyun sırasında oluşturulan çizimler geçicidir ve saklanmaz. Ancak oluşturduğunuz tüm içerikten siz
+                sorumlusunuz. Uygunsuz içerik, oyun oturumlarından çıkarılmanıza neden olabilir.</p>
+
+            <h2>5. Garanti Reddi</h2>
+            <p>Bu hizmet herhangi bir garanti olmaksızın "OLDUĞU GİBİ" sağlanmaktadır. Şunları garanti etmiyoruz:</p>
+            <ul>
+                <li>Kesintisiz veya hatasız hizmet</li>
+                <li>Hizmetin özel gereksinimlerinizi karşılayacağı</li>
+                <li>Oyun sonuçlarının veya puanların doğruluğu</li>
+            </ul>
+
+            <h2>6. Sorumluluk Sınırlaması</h2>
+            <p>Bu hizmeti kullanımınızdan kaynaklanan dolaylı, arızi, özel veya sonuç olarak ortaya çıkan zararlardan
+                sorumlu olmayacağız.</p>
+
+            <h2>7. Üçüncü Taraf Hizmetleri</h2>
+            <p>Bu uygulama Discord platformu içinde çalışır ve <a href="https://discord.com/terms"
+                    target="_blank">Discord'un Hizmet Şartları</a>'na tabidir.</p>
+
+            <h2>8. Şartlardaki Değişiklikler</h2>
+            <p>Bu şartları istediğimiz zaman güncelleyebiliriz. Değişikliklerden sonra hizmeti kullanmaya devam etmeniz,
+                yeni şartları kabul ettiğiniz anlamına gelir.</p>
+
+            <h2>9. Fesih</h2>
+            <p>Bu Şartları ihlal ettiğine inandığımız davranışlar için önceden haber vermeksizin hizmetimize erişimi
+                sonlandırma veya askıya alma hakkını saklı tutarız.</p>
+
+            <h2>10. İletişim</h2>
+            <p>Bu şartlarla ilgili sorularınız için Discord veya GitHub üzerinden bizimle iletişime geçebilirsiniz.</p>
+
+            <p class="last-updated">Son Güncelleme: Ocak 2026</p>
+        </div>
+    </div>
+
+    <script>
+        function switchLang(lang) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(lang).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+
+</html>
