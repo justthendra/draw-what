@@ -1,41 +1,129 @@
-/* Minimal Reset */
+/* =========================================================
+   DRAW WHAT?! - Design System & Base Foundation
+   ========================================================= */
+
+:root {
+  /* Color Palette - Vibrant Cyber / Arcade Dark */
+  --bg-darkest: #070814;
+  --bg-primary: #0d0f22;
+  --bg-secondary: #131732;
+  --bg-card: rgba(22, 27, 58, 0.7);
+  --bg-card-solid: #161b3a;
+  --bg-card-hover: rgba(30, 37, 78, 0.85);
+  --bg-input: rgba(10, 13, 30, 0.6);
+
+  /* Neon Accents */
+  --accent-cyan: #00f0ff;
+  --accent-pink: #ff2d75;
+  --accent-purple: #8b5cf6;
+  --accent-blue: #3b82f6;
+  --accent-green: #10b981;
+  --accent-amber: #f59e0b;
+  --accent-red: #ef4444;
+  --accent-gold: #fbbf24;
+
+  /* Text Colors */
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --text-glow: rgba(255, 255, 255, 0.9);
+
+  /* Borders & Glass */
+  --border-glass: rgba(255, 255, 255, 0.08);
+  --border-glass-bright: rgba(255, 255, 255, 0.16);
+  --border-neon-cyan: rgba(0, 240, 255, 0.35);
+  --border-neon-pink: rgba(255, 45, 117, 0.35);
+  --glass-blur: blur(20px);
+
+  /* Shadows & Glows */
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 10px 30px -5px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 20px 50px -10px rgba(0, 0, 0, 0.65);
+  --glow-cyan: 0 0 30px rgba(0, 240, 255, 0.35);
+  --glow-pink: 0 0 30px rgba(255, 45, 117, 0.35);
+  --glow-purple: 0 0 30px rgba(139, 92, 246, 0.35);
+
+  /* Typography */
+  --font-display: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Radii */
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-spring: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Reset & Box Sizing */
 *, *::before, *::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  /* TEST: Çok belirgin bir font (Serif) kullanarak CSS'in çalışıp çalışmadığını kontrol ediyoruz */
-  font-family: 'Poppins', serif !important;
-}
-
-/* Scrollbar'ı tamamen gizle - Tüm tarayıcılar */
-::-webkit-scrollbar {
-  width: 0 !important;
-  height: 0 !important;
-  display: none !important;
-}
-
-* {
-  scrollbar-width: none !important;
-  -ms-overflow-style: none !important;
 }
 
 html, body, #root {
   width: 100%;
-  height: 100%;
   min-height: 100vh;
-  background: #0d0d1a;
-  overflow-x: hidden;
-}
-
-html {
-  overflow-y: scroll;
+  background-color: var(--bg-darkest);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  font-family: 'Poppins', serif !important;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  overflow-y: auto;
-  /* Renk değişikliği ile test edelim */
-  color: #f0f0f0;
+  overflow-x: hidden;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(139, 92, 246, 0.18), transparent),
+    radial-gradient(ellipse 60% 40% at 90% 80%, rgba(0, 240, 255, 0.12), transparent),
+    radial-gradient(ellipse 60% 40% at 10% 90%, rgba(255, 45, 117, 0.12), transparent);
+  background-attachment: fixed;
+}
+
+/* Custom Sleek Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 240, 255, 0.4);
+}
+
+/* Selection */
+::selection {
+  background: rgba(0, 240, 255, 0.3);
+  color: #ffffff;
+}
+
+/* Button & Input Base Overrides */
+button {
+  font-family: var(--font-display);
+  border: none;
+  background: none;
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+}
+
+input, textarea, select {
+  font-family: var(--font-body);
+  border: none;
+  outline: none;
 }

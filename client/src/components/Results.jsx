@@ -2,15 +2,15 @@ import React, { useEffect, useRef, useState } from 'react';
 import CanvasDraw from 'react-canvas-draw';
 import { useLanguage } from '../context/LanguageContext';
 import {
-    Trophy,
-    ArrowRight,
-    LogOut,
     Target,
     Paintbrush,
     Star,
-    CheckCircle,
+    CheckCircle2,
     Info,
-    AlertCircle
+    AlertCircle,
+    LogOut,
+    Sparkles,
+    Quote
 } from 'lucide-react';
 
 function Results({
@@ -26,9 +26,10 @@ function Results({
     onLeave,
     hasVoted
 }) {
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
     const canvasRef = useRef(null);
     const [hoverScore, setHoverScore] = useState(0);
+    const [selectedScore, setSelectedScore] = useState(null);
 
     useEffect(() => {
         if (drawing && canvasRef.current) {
@@ -38,103 +39,145 @@ function Results({
                 } catch (e) {
                     console.error('Result drawing load error:', e);
                 }
-            }, 200);
+            }, 150);
             return () => clearTimeout(timer);
         }
     }, [drawing]);
 
     const teamDisplay = team || { describerName: '???', painterName: '???' };
 
+    const handleStarClick = (score) => {
+        setSelectedScore(score);
+        onVote(score);
+    };
+
     return (
-        <div className="results-container section-animate">
-            <header className="results-header">
-                <div className="header-round">
-                    <Info size={14} /> {t('round')} {round}/{totalRounds}
-                </div>
-                <div className="header-title">{t('results')}</div>
-                <div className="header-actions">
-                    <button className="btn leave-btn mini" onClick={onLeave}>
-                        <LogOut size={16} /> {t('leaveRoom')}
+        <div className="results-wrapper">
+            {/* Ambient Background Glows */}
+            <div className="ambient-glow glow-1"></div>
+            <div className="ambient-glow glow-2"></div>
+
+            <div className="results-container">
+                {/* Header */}
+                <header className="results-topbar glass-panel">
+                    <div className="header-round-pill">
+                        <Info size={14} className="text-cyan" />
+                        <span>{t('round')} {round} / {totalRounds}</span>
+                    </div>
+
+                    <div className="header-title-badge">
+                        <Sparkles size={16} className="text-gold" />
+                        <h2>{t('results')}</h2>
+                    </div>
+
+                    <button className="header-leave-btn" onClick={onLeave}>
+                        <LogOut size={14} />
+                        <span>{t('leaveRoom')}</span>
                     </button>
-                </div>
-            </header>
+                </header>
 
-            <div className="results-grid">
-                <div className="result-card target-card">
-                    <div className="card-header">
-                        <Target size={16} className="header-icon" />
-                        <span>{t('targetWord')}</span>
-                    </div>
-                    <div className="card-body">
-                        <div className="image-placeholder">
-                            <p className="description-text">"{image?.description || t('noDrawingData')}"</p>
+                {/* Showdown Comparison Grid */}
+                <div className="results-showdown-grid">
+                    {/* 1. Target Card */}
+                    <div className="showdown-card target-side glass-panel">
+                        <div className="card-badge target-badge">
+                            <Target size={16} />
+                            <span>{t('targetWord')}</span>
                         </div>
-                        <div className="team-badge">
-                            <strong>{teamDisplay.describerName}</strong> ({t('describer')})
+
+                        <div className="card-inner-content target-body">
+                            <Quote size={32} className="quote-watermark" />
+                            <p className="target-description-text">
+                                "{image?.description || t('noDrawingData')}"
+                            </p>
+                        </div>
+
+                        <div className="card-author-pill">
+                            <span className="role-chip describer-chip">{t('describer')}</span>
+                            <span className="author-name">{teamDisplay.describerName}</span>
+                        </div>
+                    </div>
+
+                    {/* 2. Drawing Card */}
+                    <div className="showdown-card drawing-side glass-panel">
+                        <div className="card-badge drawing-badge">
+                            <Paintbrush size={16} />
+                            <span>{t('drawnResult')}</span>
+                        </div>
+
+                        <div className="card-inner-content canvas-frame">
+                            {drawing ? (
+                                <CanvasDraw
+                                    ref={canvasRef}
+                                    disabled={true}
+                                    hideGrid={true}
+                                    backgroundColor="#0c0e1e"
+                                    canvasWidth={550}
+                                    canvasHeight={340}
+                                    immediateLoading={true}
+                                    style={{ width: '100%', height: '100%', borderRadius: '16px' }}
+                                />
+                            ) : (
+                                <div className="no-drawing-state">
+                                    <AlertCircle size={36} className="text-muted" />
+                                    <p>{t('noDrawingData')}</p>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="card-author-pill">
+                            <span className="role-chip painter-chip">{t('painter')}</span>
+                            <span className="author-name">{teamDisplay.painterName}</span>
                         </div>
                     </div>
                 </div>
 
-                <div className="result-card drawing-card">
-                    <div className="card-header">
-                        <Paintbrush size={16} className="header-icon" />
-                        <span>{t('drawnResult')}</span>
-                    </div>
-                    <div className="card-body canvas-body relative-canvas" style={{ minHeight: '320px' }}>
-                        {drawing ? (
-                            <CanvasDraw
-                                ref={canvasRef}
-                                disabled={true}
-                                hideGrid={true}
-                                backgroundColor="#222"
-                                canvasWidth={550}
-                                canvasHeight={380}
-                                immediateLoading={true}
-                                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
-                            />
-                        ) : (
-                            <div className="no-drawing">
-                                <AlertCircle size={40} color="rgba(255,255,255,0.2)" />
-                                <p>{t('noDrawingData')}</p>
+                {/* Voting Action Section */}
+                <div className="voting-action-box glass-panel">
+                    {!hasVoted ? (
+                        <div className="voting-interactive-area">
+                            <h3 className="voting-headline">{t('rateDrawing')}</h3>
+                            <p className="voting-subhead">
+                                {language === 'tr' ? 'Çizim hedefe ne kadar benziyor? (1-5 Yıldız)' : 'How well does the drawing match the prompt?'}
+                            </p>
+
+                            <div className="star-rating-row">
+                                {[1, 2, 3, 4, 5].map((score) => {
+                                    const isHighlighted = (hoverScore || selectedScore || 0) >= score;
+                                    return (
+                                        <button
+                                            key={score}
+                                            type="button"
+                                            className={`star-score-btn ${isHighlighted ? 'active-star' : ''}`}
+                                            onClick={() => handleStarClick(score)}
+                                            onMouseEnter={() => setHoverScore(score)}
+                                            onMouseLeave={() => setHoverScore(0)}
+                                            title={`${score} Star${score > 1 ? 's' : ''}`}
+                                        >
+                                            <Star
+                                                size={36}
+                                                fill={isHighlighted ? '#fbbf24' : 'transparent'}
+                                                stroke={isHighlighted ? '#fbbf24' : 'rgba(255,255,255,0.25)'}
+                                                className="star-icon"
+                                            />
+                                            <span className="score-num">{score}</span>
+                                        </button>
+                                    );
+                                })}
                             </div>
-                        )}
-                        <div className="team-badge">
-                            <strong>{teamDisplay.painterName}</strong> ({t('painter')})
                         </div>
-                    </div>
+                    ) : (
+                        <div className="voted-success-state">
+                            <div className="voted-pulse-icon">
+                                <CheckCircle2 size={32} className="text-green" />
+                            </div>
+                            <div className="voted-text-group">
+                                <h4>{t('voteSubmitted')}</h4>
+                                <p>{t('waitingForVotes')}</p>
+                            </div>
+                        </div>
+                    )}
                 </div>
-            </div>
-
-            <div className="voting-container">
-                {!hasVoted ? (
-                    <div className="voting-section fade-in">
-                        <h3>{t('rateDrawing')}</h3>
-                        <div className="vote-options">
-                            {[1, 2, 3, 4, 5].map((score) => (
-                                <button
-                                    key={score}
-                                    className={`vote-star-btn ${hoverScore >= score ? 'hovered' : ''}`}
-                                    onClick={() => onVote(score)}
-                                    onMouseEnter={() => setHoverScore(score)}
-                                    onMouseLeave={() => setHoverScore(0)}
-                                >
-                                    <Star
-                                        size={32}
-                                        fill={hoverScore >= score ? "var(--accent-warning)" : "transparent"}
-                                        color={hoverScore >= score ? "var(--accent-warning)" : "rgba(255,255,255,0.2)"}
-                                    />
-                                    <span className="score-label">{score}</span>
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                ) : (
-                    <div className="status-area">
-                        <div className="voted-badge">
-                            <CheckCircle size={20} /> {t('voteSubmitted')} {t('waitingForVotes')}
-                        </div>
-                    </div>
-                )}
             </div>
         </div>
     );

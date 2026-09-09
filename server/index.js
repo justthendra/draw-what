@@ -361,47 +361,74 @@ io.on("connection", (socket) => {
   socket.on("leave_room", () => {
     if (!currentRoom) return;
     const room = rooms.get(currentRoom);
-    if (room) {
-      const result = removePlayerFromRoom(room, socket.id);
-      if (result.success) {
-        if (result.shouldClose) {
-          rooms.delete(currentRoom);
-          io.to(currentRoom).emit("room_closed", { reason: "Oyuncu ayrıldı, oda kapatılıyor (Minimum 2 oyuncu gerekli)" });
-        } else {
-          io.to(currentRoom).emit("player_disconnected", {
-            playerId: socket.id,
-            playerName: playerName,
-            players: room.players
-          });
-          // Yeni host ata
-          if (room.hostId === socket.id && room.players.length > 0) {
-            room.hostId = room.players[0].id;
-          }
-        }
-      }
-    }
-    socket.leave(currentRoom);
-    currentRoom = null;
-  });
+    const leavingRoomId = currentRoom;
 
-  socket.on("disconnect", () => {
-    console.log(`❌ Bağlantı koptu: ${socket.id}`);
-    if (currentRoom) {
-      const room = rooms.get(currentRoom);
-      if (room) {
+    if (room) {
+      const isHost = room.hostId === socket.id;
+
+      // Eğer oda sahibi ayrıldıysa odayı kapat ve DİĞER oyunculara bildir
+      if (isHost) {
+        console.log(`🚪 Oda sahibi ayrıldı, oda kapatılıyor: ${leavingRoomId}`);
+        if (room.timer) clearTimeout(room.timer);
+        rooms.delete(leavingRoomId);
+        socket.to(leavingRoomId).emit("room_closed", {
+          reason: "Oda sahibi odadan ayrıldı, oda kapatıldı."
+        });
+      } else {
         const result = removePlayerFromRoom(room, socket.id);
         if (result.success) {
           if (result.shouldClose) {
-            rooms.delete(currentRoom);
-            io.to(currentRoom).emit("room_closed", { reason: "Oyuncu sayısı yetersiz (Min 2 oyuncu)" });
+            if (room.timer) clearTimeout(room.timer);
+            rooms.delete(leavingRoomId);
+            socket.to(leavingRoomId).emit("room_closed", {
+              reason: "Oyuncu sayısı yetersiz (Minimum 2 oyuncu gerekli)."
+            });
           } else {
-            io.to(currentRoom).emit("player_disconnected", {
+            socket.to(leavingRoomId).emit("player_disconnected", {
               playerId: socket.id,
               playerName: playerName,
               players: room.players
             });
-            if (room.hostId === socket.id && room.players.length > 0) {
-              room.hostId = room.players[0].id;
+          }
+        }
+      }
+    }
+    socket.leave(leavingRoomId);
+    currentRoom = null;
+  });
+
+  socket.on("disconnect", () => {
+    console.log(`❌ Bağlantı koptu: ${socket.id} (${playerName || 'Bilinmeyen'})`);
+    if (currentRoom) {
+      const room = rooms.get(currentRoom);
+      const leavingRoomId = currentRoom;
+
+      if (room) {
+        const isHost = room.hostId === socket.id;
+
+        // Eğer oda sahibi koptuysa odayı kapat ve DİĞER oyunculara bildir
+        if (isHost) {
+          console.log(`🚪 Oda sahibinin bağlantısı koptu, oda kapatılıyor: ${leavingRoomId}`);
+          if (room.timer) clearTimeout(room.timer);
+          rooms.delete(leavingRoomId);
+          socket.to(leavingRoomId).emit("room_closed", {
+            reason: "Oda sahibinin bağlantısı koptu, oda kapatıldı."
+          });
+        } else {
+          const result = removePlayerFromRoom(room, socket.id);
+          if (result.success) {
+            if (result.shouldClose) {
+              if (room.timer) clearTimeout(room.timer);
+              rooms.delete(leavingRoomId);
+              socket.to(leavingRoomId).emit("room_closed", {
+                reason: "Oyuncu sayısı yetersiz (Min 2 oyuncu gerekli)."
+              });
+            } else {
+              socket.to(leavingRoomId).emit("player_disconnected", {
+                playerId: socket.id,
+                playerName: playerName,
+                players: room.players
+              });
             }
           }
         }

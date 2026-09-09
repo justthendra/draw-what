@@ -6,6 +6,7 @@ import Lobby from "./components/Lobby";
 import GameBoard from "./components/GameBoard";
 import Results from "./components/Results";
 import Scoreboard from "./components/Scoreboard";
+import InfoModal from "./components/InfoModal";
 import "./App.css";
 
 // Socket bağlantısı
@@ -25,9 +26,31 @@ const socket = io(SERVER_URL, {
 });
 
 function App() {
+  const { t } = useLanguage();
   // Bağlantı durumu
   const [isConnected, setIsConnected] = useState(false);
   const [connectionError, setConnectionError] = useState(null);
+
+  // Özel Bilgi / Uyarı Modalı
+  const [modalConfig, setModalConfig] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    type: "info"
+  });
+
+  const showModal = useCallback((title, message, type = "info") => {
+    setModalConfig({
+      isOpen: true,
+      title,
+      message,
+      type
+    });
+  }, []);
+
+  const closeModal = useCallback(() => {
+    setModalConfig(prev => ({ ...prev, isOpen: false }));
+  }, []);
 
   // Oyun durumu
   const [gamePhase, setGamePhase] = useState("join"); // join | lobby | playing | voting | results | ended
@@ -98,8 +121,15 @@ function App() {
     });
 
     socket.on("room_closed", ({ reason }) => {
-      alert(`Oda kapatıldı: ${reason}`);
+      showModal("Oda Kapatıldı", reason, "room_closed");
+      setRoomId(null);
+      setPlayers([]);
+      setIsHost(false);
       setGamePhase("join");
+      setChatMessages([]);
+      setRole(null);
+      setCurrentImage(null);
+      setDrawingData(null);
     });
 
     // Sohbet olayları
@@ -198,10 +228,10 @@ function App() {
         setIsHost(true);
         setGamePhase("lobby");
       } else {
-        alert(response.error);
+        showModal("Oda Oluşturulamadı", response.error, "error");
       }
     });
-  }, []);
+  }, [showModal]);
 
   // Odaya katıl
   const handleJoinRoom = useCallback((roomId, name) => {
@@ -213,10 +243,10 @@ function App() {
         setIsHost(response.room.hostId === socket.id);
         setGamePhase("lobby");
       } else {
-        alert(response.error);
+        showModal("Odaya Katılınamadı", response.error, "error");
       }
     });
-  }, []);
+  }, [showModal]);
 
   // Hazır ol
   const handleToggleReady = useCallback(() => {
@@ -227,10 +257,10 @@ function App() {
   const handleStartGame = useCallback(() => {
     socket.emit("start_game", (response) => {
       if (!response.success) {
-        alert(response.error);
+        showModal("Oyun Başlatılamadı", response.error, "warning");
       }
     });
-  }, []);
+  }, [showModal]);
 
   // Çizim gönder
   const handleDrawUpdate = useCallback((data) => {
@@ -250,9 +280,9 @@ function App() {
 
   // Sonraki tur
   const handleNextRound = useCallback(() => {
-    if (!socket.connected) return alert("Bağlantı koptu, lütfen sayfayı yenileyin.");
+    if (!socket.connected) return showModal("Bağlantı Hatası", "Bağlantı koptu, lütfen sayfayı yenileyin.", "error");
     socket.emit("next_round");
-  }, []);
+  }, [showModal]);
 
   // Odadan ayrıl
   const handleLeaveRoom = useCallback(() => {
@@ -350,30 +380,49 @@ function App() {
         );
       }
 
-      return <div className="loading">Yükleniyor...</div>;
+      return (
+        <div className="loading-screen glass-panel">
+          <div className="loading-spinner"></div>
+          <p>{t('loading')}</p>
+        </div>
+      );
     } catch (err) {
       console.error("Render hatası:", err);
       return (
-        <div className="error-screen">
-          <h2>⚠️ Bir hata oluştu</h2>
+        <div className="error-screen glass-panel">
+          <h2>⚠️ {t('error')}</h2>
           <p>Oyun verileri yüklenirken bir sorun yaşandı.</p>
-          <button onClick={() => window.location.reload()}>Oyunu Yenile</button>
+          <button className="primary-action-btn" onClick={() => window.location.reload()}>
+            Oyunu Yenile
+          </button>
         </div>
       );
     }
   };
 
   return (
-    <div className="app">
-      {/* Bağlantı durumu */}
-      <div className={`connection-bar ${isConnected ? 'connected' : 'disconnected'}`}>
-        {isConnected ? '🟢 Bağlı' : `🔴 ${connectionError || 'Bağlanıyor...'}`}
+    <div className="app-container">
+      {/* Floating Connection Status */}
+      <div className={`floating-connection-status ${isConnected ? 'is-connected' : 'is-disconnected'}`}>
+        <span className="status-indicator-dot"></span>
+        <span className="status-text-label">
+          {isConnected ? t('connectionStatus.connected') : (connectionError || t('connectionStatus.connecting'))}
+        </span>
       </div>
 
-      {/* Ana içerik */}
-      <div className="main-content">
+      {/* Main Content Viewport */}
+      <div className="main-viewport">
         {renderGame()}
       </div>
+
+      {/* Custom In-App Info / Alert Modal */}
+      <InfoModal
+        isOpen={modalConfig.isOpen}
+        title={modalConfig.title}
+        message={modalConfig.message}
+        type={modalConfig.type}
+        onClose={closeModal}
+      />
     </div>
   );
 }
